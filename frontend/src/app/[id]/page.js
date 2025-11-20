@@ -10,37 +10,65 @@ import Footer from '@/components/Footer';
 import Header from '@/components/Header';
 import Sitemap from '@/components/Sitemap';
 import {useParams} from "next/navigation";
-// const baseurl = import.meta.env.REACT_APP_API_BASE_URL;
+
 const baseurl = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 function TopPage() {
-
-  const { id } = useParams()
-
-  useEffect(()=>{
-    localStorage.setItem("userID", id)
-
-  },[
-    id
-  ])
+  const { id } = useParams();
   const [products, setProducts] = useState([]);
-  useEffect(()=>{
-    getUserData(id)
-  },[])
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
-  const getUserData = (id)=>{
-    let config = {
-      method: 'get',
-      url: `${baseurl}/api/user-products/${id}`,
-    };
-    axios(config)
-        .then(async (response) => {
+  useEffect(() => {
+    if (!id) return;
 
-          setProducts(response.data.products)
-        })
-        .catch((err)=>{
+    localStorage.setItem("userID", id);
+    getUserData(id);
+  }, [id]);
 
-        })
+  const getUserData = async (uid) => {
+    try {
+      setLoading(true);
+      setError(null);
+      const response = await axios.get(`${baseurl}/api/user-products/${uid}`);
+      setProducts(response.data.products);
+    } catch (err) {
+      setError('データの取得に失敗しました');
+      console.log("Error fetching data:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+
+  if (loading) {
+    return (
+      <>
+        <Header />
+        <div className="product">
+          <div style={{ padding: '40px', textAlign: 'center', fontSize: '18px' }}>
+            読み込み中...
+          </div>
+        </div>
+        <Footer />
+        <Sitemap />
+      </>
+    );
+  }
+
+  if (error) {
+    return (
+      <>
+        <Header />
+        <div className="product">
+          <div style={{ padding: '40px', textAlign: 'center', fontSize: '18px', color: 'red' }}>
+            エラー: {error}
+          </div>
+        </div>
+        <Footer />
+        <Sitemap />
+      </>
+    );
   }
 
   return(

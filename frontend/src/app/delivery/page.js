@@ -1,34 +1,42 @@
 'use client'
-// import { useLocation, useNavigate, useParams } from 'react-router-dom';
-import { useEffect, useState } from 'react';
-import axios from 'axios';
 import Footer from '../../components/Footer';
 import Header from '../../components/Header';
 import Sitemap from '../../components/Sitemap';
-const baseurl = process.env.NEXT_PUBLIC_API_BASE_URL;
+import { usePageData } from '../../hooks/usePageData';
 
 function DeliveryPage() {
-    const [displayData, setDisplayData] = useState({})
-    useEffect(()=>{
-        getPageData()
-    },[])
-    const getPageData = (id)=>{
-        let config = {
-            method: 'get',
-            url: `${baseurl}/api/get-page-data`,
-        };
-        axios(config)
-            .then(async (response) => {
-                let tmp_data = {}
-                response.data.settings.forEach(element => {
-                    tmp_data = {...tmp_data, [element.key]:element.value}
+    const { displayData, loading, error } = usePageData();
 
-                });
-                setDisplayData(tmp_data)
-            })
-            .catch((err)=>{
+    if (loading) {
+        return (
+            <>
+                <Header/>
+                <div className="product">
+                    <section className="list">
+                        <div className="contain" style={{textAlign: 'center', padding: '50px'}}>
+                            <p>読み込み中...</p>
+                        </div>
+                    </section>
+                </div>
+                <Sitemap/>
+            </>
+        );
+    }
 
-            })
+    if (error) {
+        return (
+            <>
+                <Header/>
+                <div className="product">
+                    <section className="list">
+                        <div className="contain" style={{textAlign: 'center', padding: '50px', color: 'red'}}>
+                            <p>エラー: {error}</p>
+                        </div>
+                    </section>
+                </div>
+                <Sitemap/>
+            </>
+        );
     }
 
     return(

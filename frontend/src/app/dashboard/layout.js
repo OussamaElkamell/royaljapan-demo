@@ -142,14 +142,7 @@ export default function Layout({ children }) {
         ) : pathname.includes("/product-stting") ? (
           <ProductSetting products={products} />
         ) : (
-          <Home
-            userid={userid}
-            username={username}
-            products={products}
-            sellCount={sellCount}
-            profit={profit}
-            coupons={coupons}
-          />
+          <Home />
         )}
       </main>
     </div>

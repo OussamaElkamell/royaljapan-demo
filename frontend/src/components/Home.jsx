@@ -1,11 +1,33 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
+import { useDashboardData } from "@/hooks/useDashboardData";
 const baseurl = process.env.NEXT_PUBLIC_API_BASE_URL;
 
-function Home({ userid, username, products, coupons, sellCount, profit }) {
-  // const navigate = useNavigate()
+function Home() {
   const router = useRouter();
+  const { userid, username, products, coupons, sellCount, profit, loading, error } = useDashboardData();
+
+  if (loading) {
+    return (
+      <div className="container">
+        <div className="title">
+          <p>読み込み中...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="container">
+        <div className="title">
+          <p style={{ color: 'red' }}>エラー: {error}</p>
+        </div>
+      </div>
+    );
+  }
+
   const handleUpdate = (price_id) => {
     var userData = JSON.parse(localStorage.getItem("userData")) || null;
     var token = userData.token;
